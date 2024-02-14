@@ -1,6 +1,7 @@
 # favorikitaplarim
 
-A new Flutter project.
+
+A new Flutter project created by Bugra Kahvecioglu.
 
 ## Getting Started
 
