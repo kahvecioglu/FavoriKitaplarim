@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:favorikitaplarim/cards/book_card.dart';
+import 'package:favorikitaplarim/models/book_models.dart';
+import 'package:favorikitaplarim/models/provider_book_model.dart';
 import 'package:favorikitaplarim/screens/favorite_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -169,6 +173,7 @@ class _HomePageState extends State<HomePage> {
                           final authors = volumeInfo['authors'] != null
                               ? volumeInfo['authors'].join(', ')
                               : 'Bilgi yok';
+
                           final publisher =
                               volumeInfo['publisher'] ?? 'Bilgi yok';
                           final publishedDate =
@@ -176,11 +181,96 @@ class _HomePageState extends State<HomePage> {
                           final pageCount =
                               volumeInfo['pageCount']?.toString() ??
                                   'Bilgi yok';
+                          final id = book['id'];
+
                           final thumbnail = volumeInfo['imageLinks'] != null
                               ? volumeInfo['imageLinks']['thumbnail']
                               : null;
+                          final isFavorite =
+                              Provider.of<ProviderBookModel>(context)
+                                  .secilenkitaplar
+                                  .any((element) => element.id == id);
 
                           return BookCard(
+                            isFavorite: isFavorite,
+                            onLongPress: () {
+                              BookModel bookModel = BookModel(
+                                id: id,
+                                title: title,
+                                authors: authors,
+                                pageCount: pageCount,
+                                publishedDate: publishedDate,
+                                publisher: publisher,
+                                thumbnail: thumbnail,
+                              );
+
+                              if (Provider.of<ProviderBookModel>(context,
+                                      listen: false)
+                                  .secilenkitaplar
+                                  .any((element) =>
+                                      element.id == bookModel.id)) {
+                                Provider.of<ProviderBookModel>(context,
+                                        listen: false)
+                                    .KitapSil(bookModel);
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                        duration: Duration(seconds: 1),
+                                        backgroundColor: Colors.blue,
+                                        content: Text(
+                                          "Favorilerden Kaldırıldı",
+                                          style: TextStyle(fontSize: 20),
+                                        )));
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                        duration: Duration(seconds: 1),
+                                        backgroundColor: Colors.blue,
+                                        content: Text(
+                                          "Favorilerde bu kitap yok",
+                                          style: TextStyle(fontSize: 20),
+                                        )));
+                              }
+                            },
+                            onDoubleTap: () {
+                              BookModel bookModel = BookModel(
+                                id: id,
+                                title: title,
+                                authors: authors,
+                                pageCount: pageCount,
+                                publishedDate: publishedDate,
+                                publisher: publisher,
+                                thumbnail: thumbnail,
+                              );
+                              if (Provider.of<ProviderBookModel>(context,
+                                      listen: false)
+                                  .secilenkitaplar
+                                  .any((element) =>
+                                      element.id == bookModel.id)) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                        duration: Duration(seconds: 1),
+                                        backgroundColor: Colors.blue,
+                                        content: Text(
+                                          "Zaten Favorilerde Mevcut",
+                                          style: TextStyle(fontSize: 20),
+                                        )));
+                              } else {
+                                Provider.of<ProviderBookModel>(context,
+                                        listen: false)
+                                    .KitapSec(bookModel);
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: Duration(seconds: 1),
+                                    backgroundColor: Colors.blue,
+                                    content: Text(
+                                      "Favorilere Eklendi",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
                             title: title,
                             authors: authors,
                             pageCount: pageCount,

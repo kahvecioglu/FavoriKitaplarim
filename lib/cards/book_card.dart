@@ -10,47 +10,41 @@ class BookCard extends StatelessWidget {
   final String? publishedDate;
   final String? pageCount;
   final String? thumbnail;
+  final BookModel? book;
+  Function()? onLongPress;
+  Function()? onDoubleTap;
+  final String? id;
+  Color? bordercolor;
+  final bool? isFavorite;
 
-  const BookCard({
-    this.title,
-    this.authors,
-    this.publisher,
-    this.publishedDate,
-    this.pageCount,
-    this.thumbnail,
-  });
+  BookCard(
+      {this.title,
+      this.authors,
+      this.publisher,
+      this.publishedDate,
+      this.pageCount,
+      this.thumbnail,
+      this.book,
+      this.onLongPress,
+      this.onDoubleTap,
+      this.id,
+      this.bordercolor = Colors.blue,
+      this.isFavorite});
 
   @override
   Widget build(BuildContext context) {
+    Color bordercolor =
+        isFavorite != null && isFavorite! ? Colors.green : Colors.blue;
     return InkWell(
-      onDoubleTap: () {
-        Provider.of<ProviderBookModel>(context, listen: false).KitapSec(
-            BookModel(
-                title: title!,
-                authors: authors!,
-                pageCount: pageCount!,
-                publishedDate: publishedDate!,
-                publisher: publisher!,
-                thumbnail: thumbnail!));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.blue,
-            content: Center(
-              child: Text(
-                "Favorilere Eklendi",
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          ),
-        );
-      },
+      onDoubleTap: onDoubleTap,
+      onLongPress: onLongPress,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         padding: EdgeInsets.all(7),
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 23, 30, 37),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.blue, width: 1),
+          border: Border.all(color: bordercolor, width: 1),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

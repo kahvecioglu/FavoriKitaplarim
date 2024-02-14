@@ -10,10 +10,10 @@ class ProviderBookModel extends ChangeNotifier {
   void KitapSec(BookModel bookModel) {
     _secilenkitaplar.add(bookModel);
     notifyListeners();
+  }
 
-    void KitapSil(BookModel bookModel) {
-      _secilenkitaplar.remove(bookModel);
-      notifyListeners();
-    }
+  void KitapSil(BookModel bookModel) {
+    _secilenkitaplar.removeWhere((book) => book.id == bookModel.id);
+    notifyListeners();
   }
 }

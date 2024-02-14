@@ -27,12 +27,22 @@ class FavoritePage extends StatelessWidget {
             itemBuilder: (context, index) {
               BookModel book = provider.secilenkitaplar[index];
               return BookCard(
+                isFavorite: true,
+                book: book,
+                id: book.id,
                 title: book.title,
                 authors: book.authors,
                 pageCount: book.pageCount,
                 publishedDate: book.publishedDate,
                 publisher: book.publisher,
                 thumbnail: book.thumbnail,
+                onLongPress: () {
+                  if (Provider.of<ProviderBookModel>(context, listen: false)
+                      .secilenkitaplar
+                      .contains(book))
+                    Provider.of<ProviderBookModel>(context, listen: false)
+                        .KitapSil(book);
+                },
               );
             },
           );
