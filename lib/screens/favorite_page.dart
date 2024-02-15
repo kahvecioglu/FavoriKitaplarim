@@ -41,7 +41,7 @@ class FavoritePage extends StatelessWidget {
                       .secilenkitaplar
                       .contains(book)) {
                     Provider.of<ProviderBookModel>(context, listen: false)
-                        .kitapSil(book);
+                        .kitapRemove(book);
                   }
                 },
               );
