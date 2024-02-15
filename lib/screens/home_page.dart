@@ -185,7 +185,7 @@ class _HomePageState extends State<HomePage> {
 
                           final thumbnail = volumeInfo['imageLinks'] != null
                               ? volumeInfo['imageLinks']['thumbnail']
-                              : null;
+                              : 'https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Photo-Image-Icon-Graphics-10388619-1-1-580x386.jpg';
                           final isFavorite =
                               Provider.of<ProviderBookModel>(context)
                                   .secilenkitaplar
@@ -201,7 +201,8 @@ class _HomePageState extends State<HomePage> {
                                 pageCount: pageCount,
                                 publishedDate: publishedDate,
                                 publisher: publisher,
-                                thumbnail: thumbnail,
+                                thumbnail: thumbnail ??
+                                    'https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Photo-Image-Icon-Graphics-10388619-1-1-580x386.jpg',
                               );
 
                               if (Provider.of<ProviderBookModel>(context,
@@ -239,7 +240,8 @@ class _HomePageState extends State<HomePage> {
                                 pageCount: pageCount,
                                 publishedDate: publishedDate,
                                 publisher: publisher,
-                                thumbnail: thumbnail,
+                                thumbnail: thumbnail ??
+                                    "https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Photo-Image-Icon-Graphics-10388619-1-1-580x386.jpg",
                               );
                               if (Provider.of<ProviderBookModel>(context,
                                       listen: false)

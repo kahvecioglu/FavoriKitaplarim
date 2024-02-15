@@ -47,22 +47,14 @@ class BookCard extends StatelessWidget {
           border: Border.all(color: bordercolor, width: 1),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (thumbnail != null)
-              Image.network(
-                thumbnail!,
-                width: 80,
-                height: 110,
-                fit: BoxFit.cover,
-              )
-            else
-              Container(
-                width: 80,
-                height: 110,
-                color: Colors.grey,
-                child: Icon(Icons.image, color: Colors.white),
-              ),
+            Image.network(
+              thumbnail!,
+              width: 80,
+              height: 110,
+              fit: BoxFit.cover,
+            ),
             SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -75,6 +67,8 @@ class BookCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Divider(
                     color: Colors.blue,
