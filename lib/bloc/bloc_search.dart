@@ -31,8 +31,4 @@ class SearchBloc {
   void clearSearchResults() {
     _searchResultsController.sink.add([]);
   }
-
-  void dispose() {
-    _searchResultsController.close();
-  }
 }

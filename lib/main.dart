@@ -1,5 +1,4 @@
 import 'package:favorikitaplarim/models/book_model_adapter.dart';
-import 'package:favorikitaplarim/models/book_models.dart';
 import 'package:favorikitaplarim/models/provider_book_model.dart';
 import 'package:favorikitaplarim/screens/home_page.dart';
 import 'package:flutter/material.dart';
