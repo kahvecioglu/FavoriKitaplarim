@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:favorikitaplarim/cards/book_card.dart';
 import 'package:favorikitaplarim/models/book_models.dart';
@@ -17,7 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   String _searchTerm = "";
   List<Map<String, dynamic>> _books = [];
 
@@ -37,7 +36,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           _books.clear();
 
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Colors.blue,
               content: Text(
                 "Kitap bulunamadı",
@@ -46,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.blue,
           content: Text("Kitaplar Yüklenirken Bir Sorun Oluştu..",
               style: TextStyle(fontSize: 20))));
@@ -56,11 +55,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 23, 30, 37),
+      backgroundColor: const Color.fromARGB(255, 23, 30, 37),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Color.fromARGB(255, 23, 30, 37),
-        title: Text(
+        title: const Text(
           "Favori Kitaplarım",
           style: TextStyle(color: Colors.white, fontSize: 33),
         ),
@@ -73,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                     builder: (context) => FavoritePage(),
                   ));
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.favorite,
               color: Colors.red,
               size: 30,
@@ -89,18 +88,18 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Expanded(
                   child: TextField(
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                     controller: _searchController,
                     decoration: InputDecoration(
-                      prefixIcon:
-                          Icon(Icons.search, color: Colors.white, size: 30),
+                      prefixIcon: const Icon(Icons.search,
+                          color: Colors.white, size: 30),
                       hintText: "Arama yapınız..",
-                      hintStyle: TextStyle(color: Colors.white),
-                      focusedBorder: OutlineInputBorder(
+                      hintStyle: const TextStyle(color: Colors.white),
+                      focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.blue),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
+                        borderSide: const BorderSide(color: Colors.blue),
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
@@ -115,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Container(
@@ -129,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         if (_searchTerm.length > 500) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               backgroundColor: Colors.blue,
                               content: Text(
                                 "Terim Çok Uzun",
@@ -141,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                           _searchBooks(_searchTerm);
                         }
                       },
-                      icon: Text(
+                      icon: const Text(
                         "ARAMA",
                         style: TextStyle(color: Colors.white),
                       )),
@@ -149,19 +148,19 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Expanded(
             child: _searchTerm.isEmpty
-                ? Center(
+                ? const Center(
                     child: Text(
                       "Arama Yapmak İçin Terim Girin",
                       style: TextStyle(color: Colors.grey, fontSize: 20),
                     ),
                   )
                 : _books.isEmpty
-                    ? Center(
+                    ? const Center(
                         child: Text("Kitap Bulunamadı"),
                       )
                     : ListView.builder(
@@ -212,9 +211,9 @@ class _HomePageState extends State<HomePage> {
                                       element.id == bookModel.id)) {
                                 Provider.of<ProviderBookModel>(context,
                                         listen: false)
-                                    .KitapSil(bookModel);
+                                    .kitapSil(bookModel);
                                 ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
+                                    .showSnackBar(const SnackBar(
                                         duration: Duration(seconds: 1),
                                         backgroundColor: Colors.blue,
                                         content: Text(
@@ -223,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                                         )));
                               } else {
                                 ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
+                                    .showSnackBar(const SnackBar(
                                         duration: Duration(seconds: 1),
                                         backgroundColor: Colors.blue,
                                         content: Text(
@@ -249,7 +248,7 @@ class _HomePageState extends State<HomePage> {
                                   .any((element) =>
                                       element.id == bookModel.id)) {
                                 ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
+                                    .showSnackBar(const SnackBar(
                                         duration: Duration(seconds: 1),
                                         backgroundColor: Colors.blue,
                                         content: Text(
@@ -259,10 +258,10 @@ class _HomePageState extends State<HomePage> {
                               } else {
                                 Provider.of<ProviderBookModel>(context,
                                         listen: false)
-                                    .KitapSec(bookModel);
+                                    .kitapSec(bookModel);
 
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                     duration: Duration(seconds: 1),
                                     backgroundColor: Colors.blue,
                                     content: Text(

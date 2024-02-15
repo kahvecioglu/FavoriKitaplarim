@@ -39,9 +39,10 @@ class FavoritePage extends StatelessWidget {
                 onLongPress: () {
                   if (Provider.of<ProviderBookModel>(context, listen: false)
                       .secilenkitaplar
-                      .contains(book))
+                      .contains(book)) {
                     Provider.of<ProviderBookModel>(context, listen: false)
-                        .KitapSil(book);
+                        .kitapSil(book);
+                  }
                 },
               );
             },

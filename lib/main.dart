@@ -3,7 +3,7 @@ import 'package:favorikitaplarim/screens/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ProviderBookModel(),
-      builder: (context, child) => MaterialApp(
+      builder: (context, child) => const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: HomePage(),
       ),

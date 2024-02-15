@@ -1,18 +1,17 @@
 import 'package:favorikitaplarim/models/book_models.dart';
 import 'package:flutter/material.dart';
-import 'package:favorikitaplarim/models/book_models.dart';
 
 class ProviderBookModel extends ChangeNotifier {
-  List<BookModel> _secilenkitaplar = [];
+  final List<BookModel> _secilenkitaplar = [];
 
   List<BookModel> get secilenkitaplar => _secilenkitaplar;
 
-  void KitapSec(BookModel bookModel) {
+  void kitapSec(BookModel bookModel) {
     _secilenkitaplar.add(bookModel);
     notifyListeners();
   }
 
-  void KitapSil(BookModel bookModel) {
+  void kitapSil(BookModel bookModel) {
     _secilenkitaplar.removeWhere((book) => book.id == bookModel.id);
     notifyListeners();
   }
