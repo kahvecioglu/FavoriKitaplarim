@@ -211,7 +211,7 @@ class _HomePageState extends State<HomePage> {
                                       element.id == bookModel.id)) {
                                 Provider.of<ProviderBookModel>(context,
                                         listen: false)
-                                    .kitapRemove(bookModel);
+                                    .bookRemove(bookModel);
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(const SnackBar(
                                         duration: Duration(seconds: 1),
@@ -258,7 +258,7 @@ class _HomePageState extends State<HomePage> {
                               } else {
                                 Provider.of<ProviderBookModel>(context,
                                         listen: false)
-                                    .kitapAdd(bookModel);
+                                    .bookAdd(bookModel);
 
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

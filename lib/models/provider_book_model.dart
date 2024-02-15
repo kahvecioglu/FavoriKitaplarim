@@ -11,13 +11,13 @@ class ProviderBookModel extends ChangeNotifier {
     _loadFromHive(); // Uygulama başladığında favori kitapları yükle
   }
 
-  void kitapAdd(BookModel bookModel) {
+  void bookAdd(BookModel bookModel) {
     _secilenkitaplar.add(bookModel);
     notifyListeners();
     _saveToHive(bookModel); // Favorilere eklenen kitabı Hive'a kaydet
   }
 
-  void kitapRemove(BookModel bookModel) {
+  void bookRemove(BookModel bookModel) {
     _secilenkitaplar.removeWhere((book) => book.id == bookModel.id);
     notifyListeners();
     _removeFromHive(
