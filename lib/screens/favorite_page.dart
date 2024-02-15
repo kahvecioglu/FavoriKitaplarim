@@ -10,12 +10,12 @@ class FavoritePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 23, 30, 37),
+      backgroundColor: const Color.fromARGB(255, 23, 30, 37),
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Color.fromARGB(255, 23, 30, 37),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: const Color.fromARGB(255, 23, 30, 37),
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'Favoriler',
           style: TextStyle(color: Colors.white, fontSize: 33),
         ),

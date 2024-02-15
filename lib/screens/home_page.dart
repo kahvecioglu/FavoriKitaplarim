@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:favorikitaplarim/bloc/bloc_search.dart';
 import 'package:favorikitaplarim/cards/book_card.dart';
 import 'package:favorikitaplarim/models/book_models.dart';
 import 'package:favorikitaplarim/models/provider_book_model.dart';
@@ -9,7 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -18,38 +19,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchTerm = "";
-  List<Map<String, dynamic>> _books = [];
+  final SearchBloc _searchBloc = SearchBloc();
 
-  void _searchBooks(String term) async {
-    final response = await http.get(
-      Uri.parse('https://www.googleapis.com/books/v1/volumes?q=$term'),
-    );
-
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body)['items'];
-
-      if (responseData != null) {
-        setState(() {
-          _books = List<Map<String, dynamic>>.from(responseData);
-        });
-      } else {
-        setState(() {
-          _books.clear();
-
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.blue,
-              content: Text(
-                "Kitap bulunamadı",
-                style: TextStyle(fontSize: 20),
-              )));
-        });
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          backgroundColor: Colors.blue,
-          content: Text("Kitaplar Yüklenirken Bir Sorun Oluştu..",
-              style: TextStyle(fontSize: 20))));
-    }
+  @override
+  void dispose() {
+    _searchBloc.dispose();
+    super.dispose();
   }
 
   @override
@@ -58,7 +33,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: const Color.fromARGB(255, 23, 30, 37),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 23, 30, 37),
+        backgroundColor: const Color.fromARGB(255, 23, 30, 37),
         title: const Text(
           "Favori Kitaplarım",
           style: TextStyle(color: Colors.white, fontSize: 33),
@@ -67,10 +42,11 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             onPressed: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FavoritePage(),
-                  ));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FavoritePage(),
+                ),
+              );
             },
             icon: const Icon(
               Icons.favorite,
@@ -88,6 +64,15 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Expanded(
                   child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        _searchTerm = value;
+
+                        if (value.isEmpty) {
+                          _searchBloc.clearSearchResults();
+                        }
+                      });
+                    },
                     style: const TextStyle(color: Colors.white),
                     controller: _searchController,
                     decoration: InputDecoration(
@@ -103,15 +88,6 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _searchTerm = value;
-
-                        if (_searchTerm.isEmpty) {
-                          _books.clear();
-                        }
-                      });
-                    },
                   ),
                 ),
                 const SizedBox(
@@ -125,25 +101,37 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(3),
                   ),
                   child: IconButton(
-                      onPressed: () {
-                        if (_searchTerm.length > 500) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              backgroundColor: Colors.blue,
-                              content: Text(
-                                "Terim Çok Uzun",
-                                style: TextStyle(fontSize: 20),
-                              ),
+                    onPressed: () {
+                      _searchTerm = _searchController.text;
+                      if (_searchTerm.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.blue,
+                            content: Text(
+                              "Arama yapmak için bir terim girin",
+                              style: TextStyle(fontSize: 20),
                             ),
-                          );
-                        } else {
-                          _searchBooks(_searchTerm);
-                        }
-                      },
-                      icon: const Text(
-                        "ARAMA",
-                        style: TextStyle(color: Colors.white),
-                      )),
+                          ),
+                        );
+                      } else if (_searchTerm.length > 500) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.blue,
+                            content: Text(
+                              "Terim çok uzun",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        );
+                      } else {
+                        _searchBloc.searchBooks(_searchTerm);
+                      }
+                    },
+                    icon: const Text(
+                      "ARAMA",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 )
               ],
             ),
@@ -152,135 +140,149 @@ class _HomePageState extends State<HomePage> {
             height: 20,
           ),
           Expanded(
-            child: _searchTerm.isEmpty
+            child: _searchTerm == ""
                 ? const Center(
                     child: Text(
-                      "Arama Yapmak İçin Terim Girin",
-                      style: TextStyle(color: Colors.grey, fontSize: 20),
+                      "Arama Terimi Giriniz",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   )
-                : _books.isEmpty
-                    ? const Center(
-                        child: Text("Kitap Bulunamadı"),
-                      )
-                    : ListView.builder(
-                        itemCount: _books.length,
-                        itemBuilder: (context, index) {
-                          final book = _books[index];
-                          final volumeInfo = book['volumeInfo'];
-                          final title = volumeInfo['title'] ?? 'Bilgi yok';
-                          final authors = volumeInfo['authors'] != null
-                              ? volumeInfo['authors'].join(', ')
-                              : 'Bilgi yok';
+                : StreamBuilder<List<Map<String, dynamic>>>(
+                    stream: _searchBloc.searchResults,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final books = snapshot.data!;
 
-                          final publisher =
-                              volumeInfo['publisher'] ?? 'Bilgi yok';
-                          final publishedDate =
-                              volumeInfo['publishedDate'] ?? 'Bilgi yok';
-                          final pageCount =
-                              volumeInfo['pageCount']?.toString() ??
-                                  'Bilgi yok';
-                          final id = book['id'];
+                        return ListView.builder(
+                          itemCount: books.length,
+                          itemBuilder: (context, index) {
+                            final book = books[index];
+                            final volumeInfo = book['volumeInfo'];
+                            final title = volumeInfo['title'] ?? 'Bilgi yok';
+                            final authors = volumeInfo['authors'] != null
+                                ? volumeInfo['authors'].join(', ')
+                                : 'Bilgi yok';
 
-                          final thumbnail = volumeInfo['imageLinks'] != null
-                              ? volumeInfo['imageLinks']['thumbnail']
-                              : 'https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Photo-Image-Icon-Graphics-10388619-1-1-580x386.jpg';
-                          final isFavorite =
-                              Provider.of<ProviderBookModel>(context)
-                                  .secilenkitaplar
-                                  .any((element) => element.id == id);
+                            final publisher =
+                                volumeInfo['publisher'] ?? 'Bilgi yok';
+                            final publishedDate =
+                                volumeInfo['publishedDate'] ?? 'Bilgi yok';
+                            final pageCount =
+                                volumeInfo['pageCount']?.toString() ??
+                                    'Bilgi yok';
+                            final id = book['id'];
 
-                          return BookCard(
-                            isFavorite: isFavorite,
-                            onLongPress: () {
-                              BookModel bookModel = BookModel(
-                                id: id,
-                                title: title,
-                                authors: authors,
-                                pageCount: pageCount,
-                                publishedDate: publishedDate,
-                                publisher: publisher,
-                                thumbnail: thumbnail ??
-                                    'https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Photo-Image-Icon-Graphics-10388619-1-1-580x386.jpg',
-                              );
+                            final thumbnail = volumeInfo['imageLinks'] != null
+                                ? volumeInfo['imageLinks']['thumbnail']
+                                : 'https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Photo-Image-Icon-Graphics-10388619-1-1-580x386.jpg';
+                            final isFavorite =
+                                Provider.of<ProviderBookModel>(context)
+                                    .secilenkitaplar
+                                    .any((element) => element.id == id);
 
-                              if (Provider.of<ProviderBookModel>(context,
-                                      listen: false)
-                                  .secilenkitaplar
-                                  .any((element) =>
-                                      element.id == bookModel.id)) {
-                                Provider.of<ProviderBookModel>(context,
+                            return BookCard(
+                              isFavorite: isFavorite,
+                              onLongPress: () {
+                                BookModel bookModel = BookModel(
+                                  id: id,
+                                  title: title,
+                                  authors: authors,
+                                  pageCount: pageCount,
+                                  publishedDate: publishedDate,
+                                  publisher: publisher,
+                                  thumbnail: thumbnail ??
+                                      'https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Photo-Image-Icon-Graphics-10388619-1-1-580x386.jpg',
+                                );
+
+                                if (Provider.of<ProviderBookModel>(context,
                                         listen: false)
-                                    .bookRemove(bookModel);
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                        duration: Duration(seconds: 1),
-                                        backgroundColor: Colors.blue,
-                                        content: Text(
-                                          "Favorilerden Kaldırıldı",
-                                          style: TextStyle(fontSize: 20),
-                                        )));
-                              } else {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                        duration: Duration(seconds: 1),
-                                        backgroundColor: Colors.blue,
-                                        content: Text(
-                                          "Favorilerde bu kitap yok",
-                                          style: TextStyle(fontSize: 20),
-                                        )));
-                              }
-                            },
-                            onDoubleTap: () {
-                              BookModel bookModel = BookModel(
-                                id: id,
-                                title: title,
-                                authors: authors,
-                                pageCount: pageCount,
-                                publishedDate: publishedDate,
-                                publisher: publisher,
-                                thumbnail: thumbnail ??
-                                    "https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Photo-Image-Icon-Graphics-10388619-1-1-580x386.jpg",
-                              );
-                              if (Provider.of<ProviderBookModel>(context,
-                                      listen: false)
-                                  .secilenkitaplar
-                                  .any((element) =>
-                                      element.id == bookModel.id)) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                        duration: Duration(seconds: 1),
-                                        backgroundColor: Colors.blue,
-                                        content: Text(
-                                          "Zaten Favorilerde Mevcut",
-                                          style: TextStyle(fontSize: 20),
-                                        )));
-                              } else {
-                                Provider.of<ProviderBookModel>(context,
-                                        listen: false)
-                                    .bookAdd(bookModel);
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                    .secilenkitaplar
+                                    .any((element) =>
+                                        element.id == bookModel.id)) {
+                                  Provider.of<ProviderBookModel>(context,
+                                          listen: false)
+                                      .bookRemove(bookModel);
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
                                     duration: Duration(seconds: 1),
                                     backgroundColor: Colors.blue,
                                     content: Text(
-                                      "Favorilere Eklendi",
+                                      "Favorilerden Kaldırıldı",
                                       style: TextStyle(fontSize: 20),
                                     ),
-                                  ),
+                                  ));
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    duration: Duration(seconds: 1),
+                                    backgroundColor: Colors.blue,
+                                    content: Text(
+                                      "Favorilerde bu kitap yok",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ));
+                                }
+                              },
+                              onDoubleTap: () {
+                                BookModel bookModel = BookModel(
+                                  id: id,
+                                  title: title,
+                                  authors: authors,
+                                  pageCount: pageCount,
+                                  publishedDate: publishedDate,
+                                  publisher: publisher,
+                                  thumbnail: thumbnail ??
+                                      "https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Photo-Image-Icon-Graphics-10388619-1-1-580x386.jpg",
                                 );
-                              }
-                            },
-                            title: title,
-                            authors: authors,
-                            pageCount: pageCount,
-                            publishedDate: publishedDate,
-                            publisher: publisher,
-                            thumbnail: thumbnail,
-                          );
-                        },
-                      ),
+                                if (Provider.of<ProviderBookModel>(context,
+                                        listen: false)
+                                    .secilenkitaplar
+                                    .any((element) =>
+                                        element.id == bookModel.id)) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    duration: Duration(seconds: 1),
+                                    backgroundColor: Colors.blue,
+                                    content: Text(
+                                      "Zaten Favorilerde Mevcut",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ));
+                                } else {
+                                  Provider.of<ProviderBookModel>(context,
+                                          listen: false)
+                                      .bookAdd(bookModel);
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      duration: Duration(seconds: 1),
+                                      backgroundColor: Colors.blue,
+                                      content: Text(
+                                        "Favorilere Eklendi",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              title: title,
+                              authors: authors,
+                              pageCount: pageCount,
+                              publishedDate: publishedDate,
+                              publisher: publisher,
+                              thumbnail: thumbnail,
+                            );
+                          },
+                        );
+                      } else {
+                        return const Center(
+                            child: Text(
+                          "Arama Terimi Giriniz",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ));
+                      }
+                    },
+                  ),
           ),
         ],
       ),
