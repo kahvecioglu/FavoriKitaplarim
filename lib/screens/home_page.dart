@@ -20,8 +20,6 @@ class _HomePageState extends State<HomePage> {
   SearchBloc _searchBloc = SearchBloc();
 
   @override
-  @override
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 23, 30, 37),
