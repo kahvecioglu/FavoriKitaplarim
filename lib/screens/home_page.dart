@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       } else {
-                        _searchBloc.searchBooks(_searchTerm);
+                        _searchBloc.searchBooks(_searchTerm, context);
                       }
                     },
                     icon: const Text(
@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
               stream: _searchBloc.searchResults,
               builder: (context, snapshot) {
                 if (_searchTerm.isEmpty) {
-                  return Center(
+                  return const Center(
                     child: Text(
                       "Lütfen Bir Terim Giriniz",
                       style: TextStyle(color: Colors.white, fontSize: 20),
@@ -225,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                               backgroundColor: Colors.blue,
                               content: Center(
                                 child: Text(
-                                  "Favorilerde Bu Kitap Mevcut Değil",
+                                  "Bu Kitap Favorilerde Mevcut Değil",
                                   style: TextStyle(fontSize: 20),
                                 ),
                               ),
@@ -289,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                 } else {
                   return const Center(
                     child: Text(
-                      "Lütfen bir terim giriniz",
+                      "Lütfen Bir Terim Giriniz",
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   );

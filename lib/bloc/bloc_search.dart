@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -8,7 +9,7 @@ class SearchBloc {
   Stream<List<Map<String, dynamic>>> get searchResults =>
       _searchResultsController.stream;
 
-  void searchBooks(String term) async {
+  void searchBooks(String term, BuildContext context) async {
     final response = await http.get(
       Uri.parse('https://www.googleapis.com/books/v1/volumes?q=$term'),
     );
@@ -20,7 +21,17 @@ class SearchBloc {
         _searchResultsController.sink
             .add(List<Map<String, dynamic>>.from(responseData));
       } else {
-        _searchResultsController.sink.addError("Kitap bulunamadı");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.blue,
+            content: Center(
+              child: Text(
+                "Lütfen Geçerli Bir Terim Giriniz",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+        );
       }
     } else {
       _searchResultsController.sink
