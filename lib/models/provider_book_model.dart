@@ -1,43 +1,32 @@
 import 'package:favorikitaplarim/models/book_models.dart';
+import 'package:favorikitaplarim/services/hive.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 class ProviderBookModel extends ChangeNotifier {
   final List<BookModel> _secilenkitaplar = [];
+  final BookHiveService _bookService = BookHiveService();
 
   List<BookModel> get secilenkitaplar => _secilenkitaplar;
 
   ProviderBookModel() {
-    _loadFromHive(); // Uygulama başladığında favori kitapları yükle
+    _loadFromHive();
   }
 
-  void bookAdd(BookModel bookModel) {
+  void bookAdd(BookModel bookModel) async {
     _secilenkitaplar.add(bookModel);
     notifyListeners();
-    _saveToHive(bookModel); // Favorilere eklenen kitabı Hive'a kaydet
+    await _bookService.saveFavoriteBook(bookModel);
   }
 
-  void bookRemove(BookModel bookModel) {
+  void bookRemove(BookModel bookModel) async {
     _secilenkitaplar.removeWhere((book) => book.id == bookModel.id);
     notifyListeners();
-    _removeFromHive(
-        bookModel.id); // Favorilerden kaldırılan kitabı Hive den sil
+    await _bookService.removeFavoriteBook(bookModel.id);
   }
 
   Future<void> _loadFromHive() async {
-    var box = await Hive.openBox<BookModel>('favorite_books');
-    _secilenkitaplar.addAll(box.values.cast<
-        BookModel>()); // Box'tan gelen verileri BookModel listesine dönüştürerek ekle
+    List<BookModel> favoriteBooks = await _bookService.loadFavoriteBooks();
+    _secilenkitaplar.addAll(favoriteBooks);
     notifyListeners();
-  }
-
-  Future<void> _saveToHive(BookModel bookModel) async {
-    var box = await Hive.openBox<BookModel>('favorite_books');
-    await box.put(bookModel.id, bookModel);
-  }
-
-  Future<void> _removeFromHive(String id) async {
-    var box = await Hive.openBox<BookModel>('favorite_books');
-    await box.delete(id);
   }
 }
