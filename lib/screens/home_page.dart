@@ -26,11 +26,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 23, 30, 37),
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 23, 30, 37),
         title: const Text(
           "Favori Kitaplarım",
-          style: TextStyle(color: Colors.white, fontSize: 33),
+          style: TextStyle(
+              color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> {
             builder: (context, value, child) {
               int favoriteCount = value.secilenkitaplar.length;
               return Padding(
-                padding: const EdgeInsets.only(right: 4),
+                padding: const EdgeInsets.only(right: 20),
                 child: Text(
                   favoriteCount.toString(),
                   style: const TextStyle(color: Colors.white, fontSize: 20),
@@ -69,29 +70,35 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        _searchTerm = value;
+                  child: Container(
+                    height: 50,
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          _searchTerm = value;
 
-                        if (value.isEmpty) {
-                          _searchBloc.clearSearchResults();
-                        }
-                      });
-                    },
-                    style: const TextStyle(color: Colors.white),
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.search,
-                          color: Colors.white, size: 30),
-                      hintText: "Arama yapınız..",
-                      hintStyle: const TextStyle(color: Colors.white),
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
+                          if (value.isEmpty) {
+                            _searchBloc.clearSearchResults();
+                          }
+                        });
+                      },
+                      style: const TextStyle(
+                        color: Colors.white,
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.blue),
-                        borderRadius: BorderRadius.circular(8),
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.search,
+                            color: Colors.white, size: 30),
+                        hintText: "Arama yapınız..",
+                        hintStyle: const TextStyle(
+                            color: Colors.white, height: 0, fontSize: 18),
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.blue),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ),
@@ -138,8 +145,11 @@ class _HomePageState extends State<HomePage> {
                       }
                     },
                     icon: const Text(
-                      "ARAMA",
-                      style: TextStyle(color: Colors.white),
+                      "ARA",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 )
